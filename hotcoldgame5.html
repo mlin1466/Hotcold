@@ -1,99 +1,101 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hot and Cold</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Hot and Cold</title>
 </head>
 <body>
-    <h1>Hot and Cold</h1>
+	<h1><font color="red">Hot</font> and <font color="blue">Cold</font></h1>
+    <img src="https://i.pinimg.com/originals/15/e7/7e/15e77ecab66705834ea16b4f6b8f940b.gif" alt="Computer man" style="width:100px;height:100px;"><br>
+    <a href="https://gnrlwoundwort.github.io/Web-Development/Level%201/spec%20sheets/Level%201%20Hot%20and%20Cold.pdf">How to play</a> 
+	<p>Your current guess is: <font style="font-family: cursive" color="red" size="+10"><span id="currentGuess">50</span></font></p>
+	<p>Guesses remaining: <font style="font-family: cursive" color="blue" size="+10"><span id="remainingGuesses">5</span></font></p>
 
-    <p>Your current guess is: <span id="currentGuess">50</span></p>
-    <p>Guesses remaining: <span id="remainingGuesses">5</span></p>
+	<button style="background-color: red;color:white;"  onclick="modifyGuess(-25)">Subtract 25</button>
+	<button style="background-color: red;color:white;" onclick="modifyGuess(-10)">Subtract 10</button>
+	<button style="background-color: red;color:white;"onclick="modifyGuess(-5)">Subtract 5</button>
+	<button style="background-color: red;color:white;"onclick="modifyGuess(-1)">Subtract 1</button>
+	<button style="background-color: green;color:white;"onclick="modifyGuess(1)">Add 1</button>
+	<button style="background-color: green;color:white;"onclick="modifyGuess(5)">Add 5</button>
+	<button style="background-color: green;color:white;"onclick="modifyGuess(10)">Add 10</button>
+	<button style="background-color: green;color:white;"onclick="modifyGuess(25)">Add 25</button>
+	<button style="background-color: black;color:white;"onclick="commitGuess()">Commit</button>
+	<button style="background-color: brown;color:white;"onclick="resetGame()">Reset</button>
 
-    <button onclick="modifyGuess(-25)">Subtract 25</button>
-    <button onclick="modifyGuess(-10)">Subtract 10</button>
-    <button onclick="modifyGuess(-5)">Subtract 5</button>
-    <button onclick="modifyGuess(-1)">Subtract 1</button>
-    <button onclick="modifyGuess(1)">Add 1</button>
-    <button onclick="modifyGuess(5)">Add 5</button>
-    <button onclick="modifyGuess(10)">Add 10</button>
-    <button onclick="modifyGuess(25)">Add 25</button>
-    <button onclick="commitGuess()">Commit</button>
-    <button onclick="resetGame()">Reset</button>
+	<h2>Log</h2>
+	<div id="log"></div>
 
-    <h2>Log</h2>
-    <div id="log"></div>
+	<script>
+    	let randomNumber;
+    	let currentGuess;
+    	let attempts;
 
-    <script>
-        let randomNumber;
-        let currentGuess;
-        let attempts;
+    	function generateRandomNumber() {
+        	randomNumber = Math.floor(Math.random() * 100) + 1;
+        	console.log("Secret Number:", randomNumber); // For testing purposes
+    	}
 
-        function generateRandomNumber() {
-            randomNumber = Math.floor(Math.random() * 100) + 1;
-            console.log("Secret Number:", randomNumber); // For testing purposes
-        }
+    	function getTemperatureHint(distance) {
+        	if (distance <= 5) return 'Very Hot';
+        	if (distance <= 8) return 'Hot';
+        	if (distance <= 15) return 'Very Warm';
+        	if (distance <= 20) return 'Warm';
+        	if (distance <= 30) return 'Cool';
+        	if (distance <= 40) return 'Very Cool';
+        	if (distance <= 55) return 'Cold';
+        	return 'Very Cold';
+    	}
 
-        function getTemperatureHint(distance) {
-            if (distance <= 5) return 'Very Hot';
-            if (distance <= 8) return 'Hot';
-            if (distance <= 15) return 'Very Warm';
-            if (distance <= 20) return 'Warm';
-            if (distance <= 30) return 'Cool';
-            if (distance <= 40) return 'Very Cool';
-            if (distance <= 55) return 'Cold';
-            return 'Very Cold';
-        }
+    	function updateRemainingGuesses() {
+        	document.getElementById('remainingGuesses').textContent = attempts;
+    	}
 
-        function updateRemainingGuesses() {
-            document.getElementById('remainingGuesses').textContent = attempts;
-        }
+    	function modifyGuess(value) {
+        	currentGuess += value;
+        	if (currentGuess > 100) currentGuess = 100;
+        	if (currentGuess < 1) currentGuess = 1;
 
-        function modifyGuess(value) {
-            currentGuess += value;
-            if (currentGuess > 100) currentGuess = 100;
-            if (currentGuess < 1) currentGuess = 1;
+        	document.getElementById('currentGuess').textContent = currentGuess;
+    	}
 
-            document.getElementById('currentGuess').textContent = currentGuess;
-        }
+    	function commitGuess() {
+        	if (attempts > 0) {
+            	let distance = Math.abs(currentGuess - randomNumber);
+            	let temperatureHint = getTemperatureHint(distance);
 
-        function commitGuess() {
-            if (attempts > 0) {
-                let distance = Math.abs(currentGuess - randomNumber);
-                let temperatureHint = getTemperatureHint(distance);
+            	let logEntry = `Attempt ${6 - attempts}: You guessed ${currentGuess}. `;
+            	if (currentGuess === randomNumber) {
+                	logEntry += "Congratulations! You guessed the number!";
+                	attempts = 0; // Player can't guess anymore since they got it right
+            	} else {
+                	logEntry += temperatureHint + ". ";
+                	if (temperatureHint !== 'Very Hot') {
+                    	attempts--;
+                	}
+            	}
 
-                let logEntry = `Attempt ${6 - attempts}: You guessed ${currentGuess}. `;
-                if (currentGuess === randomNumber) {
-                    logEntry += "Congratulations! You guessed the number!";
-                    attempts = 0; // Player can't guess anymore since they got it right
-                } else {
-                    logEntry += temperatureHint + ". ";
-                    if (temperatureHint !== 'Very Hot') {
-                        attempts--;
-                    }
-                }
+            	if (attempts == 0 && currentGuess !== randomNumber) {
+                	logEntry += `You've lost! The correct number was ${randomNumber}.`;
+            	}
 
-                if (attempts == 0 && currentGuess !== randomNumber) {
-                    logEntry += `You've lost! The correct number was ${randomNumber}.`;
-                }
+            	document.getElementById('log').innerHTML += `<p>${logEntry}</p>`;
+            	updateRemainingGuesses();
+        	}
+    	}
 
-                document.getElementById('log').innerHTML += `<p>${logEntry}</p>`;
-                updateRemainingGuesses();
-            }
-        }
+    	function resetGame() {
+        	generateRandomNumber();
+        	currentGuess = 50;
+        	attempts = 5;
+        	document.getElementById('log').innerHTML = '';
+        	document.getElementById('currentGuess').textContent = currentGuess;
+        	updateRemainingGuesses();
+    	}
 
-        function resetGame() {
-            generateRandomNumber();
-            currentGuess = 50;
-            attempts = 5;
-            document.getElementById('log').innerHTML = '';
-            document.getElementById('currentGuess').textContent = currentGuess;
-            updateRemainingGuesses();
-        }
-
-        // Initialize the game
-        resetGame();
-    </script>
+    	// Initialize the game
+    	resetGame();
+	</script>
 </body>
 </html>
